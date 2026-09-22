@@ -1,54 +1,52 @@
 $ontext
 CEE 6410 - Water Resources Systems Analysis
 Example 2.1 from Bishop Et Al Text (https://digitalcommons.usu.edu/ecstatic_all/76/)
-Modifies Example to add a labor constraint
+Modifies Example to vehicle problem
 
-THE PROBLEM:
-
-An irrigated farm can be planted in two crops:  eggplants and tomatoes.  Data are as fol-lows:
-
-Seasonal Resource
-Inputs or Profit        Crops        Resource
-Availability
-        Eggplant        Tomatoes
-Water        1x103 gal/plant        2x103 gal/plant      4x106 gal/year
-Land        4 ft2/plant        3 ft2/plant               1.2x104 ft2
-Labor         5hr/plant        2.5/hr plant              17,500 hours
-Profit/plant        $6        $7
-
-                Determine the optimal planting for the two crops.
+T2. Vehicle Production Problem
+A motor vehicle company is planning production for the coming year. The company makes
+Trucks and Sedans. The company will produce 10,000 vehicles total for the year. Vehicles
+have the following components:
+The company has purchased 14,000 fuel tanks. Trucks are made with 2 fuel tanks per
+vehicle; sedans have just one tank.
+The company has purchased 18,000 rows of seats. Trucks have 1 row of seats per vehicle;
+sedans have two rows per vehicles.
+The company has purchased 6,000 four-wheel drive systems. Trucks are built with 1 four-
+wheel drive system per vehicle. Sedans have none.
+Trucks generate $100/vehicle while Sedans generate $110/vehicle
 
 THE SOLUTION:
 Uses General Algebraic Modeling System to Solve this Linear Program
 
-David E Rosenberg
-david.rosenberg@usu.edu
-September 15, 2015
+Ammon Wallace
+ammon.wallace@usu.edu
+September 21, 2026
 $offtext
 
 * 1. DEFINE the SETS
-SETS plnt crops growing /Eggplant, Tomatoes/
-     res resources /Water, Land, Labor/;
+SETS veh vehicles being made /Trucks, Sedans/
+     res resources /Fuel_Tanks, Seats, Four_Wheel_Drive, Total/;
 
 * 2. DEFINE input data
 PARAMETERS
-   c(plnt) Objective function coefficients ($ per plant)
-         /Eggplant 6,
-        Tomatoes 7 /
+   c(veh) Objective function coefficients ($ per veh)
+         /Trucks 100,
+        Sedans 110 /
 
    b(res) Right hand constraint values (per resource)
-          /Water 4000000,
-           Land  12000,
-           Labor  17500/;
+          /Fuel_Tanks 14000,
+           Seats  18000,
+           Four_Wheel_Drive  6000,
+           Total 10000/;
 
-TABLE A(plnt,res) Left hand side constraint coefficients
-                 Water    Land   Labor
- Eggplant        1000      4       5
- Tomatoes        2000      3       2.5;
+TABLE A(veh,res) Left hand side constraint coefficients
+                Fuel_Tanks  Seats  Four_Wheel_Drive  Total
+ Trucks             2         1           1            1
+ Sedans             1         2           0            1;
 
 
 * 3. DEFINE the variables
-VARIABLES X(plnt) plants planted (Number)
+VARIABLES X(veh) vehicles produced (Number)
           VPROFIT  total profit ($);
 
 * Non-negativity constraints
@@ -59,12 +57,12 @@ EQUATIONS
    PROFIT Total profit ($) and objective function value
    RES_CONSTRAIN(res) Resource Constraints;
 
-PROFIT..                 VPROFIT =E= SUM(plnt, c(plnt)*X(plnt));
-RES_CONSTRAIN(res) ..    SUM(plnt, A(plnt,res)*X(plnt)) =L= b(res);
+PROFIT..                 VPROFIT =E= SUM(veh, c(veh)*X(veh));
+RES_CONSTRAIN(res) ..    SUM(veh, A(veh,res)*X(veh)) =L= b(res);
 
 
 * 5. DEFINE the MODEL from the EQUATIONS
-MODEL PLANTING /PROFIT, RES_CONSTRAIN/;
+MODEL PRODUCTION /PROFIT, RES_CONSTRAIN/;
 *Altnerative way to write (include all previously defined equations)
 *MODEL PLANTING /ALL/;
 
@@ -72,7 +70,7 @@ MODEL PLANTING /PROFIT, RES_CONSTRAIN/;
 * 6. SOLVE the MODEL
 * Solve the PLANTING model using a Linear Programming Solver (see File=>Options=>Solvers)
 *     to maximize VPROFIT
-SOLVE PLANTING USING LP MAXIMIZING VPROFIT;
+SOLVE PRODUCTION USING LP MAXIMIZING VPROFIT;
 
 
 * 6. CLick File menu => RUN (F9) or Solve icon and examine solution report in .LST file
